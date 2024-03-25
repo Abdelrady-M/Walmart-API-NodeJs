@@ -1,0 +1,12 @@
+token : 
+ 1 : header : its an object 
+       carry the algorithm and the token ype 
+ 2 : payload : it's an object also but it carry some data related to the user ; may be user name and id 
+       but not the password bcz its can be decoded 
+ 3 : signature :  takes the header and the payload and add the secret strund and hash all these data 
+    - it is something unique that differntiate from token to another 
+    - we use jwt pakage from npm 
+    - jwt =>  
+---------------------------------------------------
+
+=> 

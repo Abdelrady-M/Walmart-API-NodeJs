@@ -1,0 +1,8 @@
+/*
+- Instructions:
+* Name the file of the product model 'product' or change the references
+* Send the user's id in the request as 'req.id' or change the references at the beginning of each function
+* Send the product's id in the request body as 'productId: any id ' or change the references at the beginning of each function
+* Send the product info you want to modify in the body with its original name in the schema
+
+*/
