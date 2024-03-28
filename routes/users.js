@@ -1,9 +1,9 @@
-// step-1 => importing express and Router
+// // step-1 => importing express and Router
 
 // const express = require("express");
 // const router = express.Router();
 
-// step-2 =>  importing function from the controller
+// // step-2 =>  importing function from the controller
 
 // const {
 //   createUser,
@@ -13,7 +13,7 @@
 //   deleteOneUser,
 // } = require("../controller/user-controller.js");
 
-// step-3 => define the function the you import from the controller on the route
+// // step-3 => define the function the you import from the controller on the route
 
 // router.post("/", createUser);
 // router.get("/:limit/:skip", getAllUsers);
