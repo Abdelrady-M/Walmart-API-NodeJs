@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 
 // Generate token
-function generateToken(id) {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+function generateToken(payload) {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
 }
@@ -119,16 +119,21 @@ const signIn = async (req, res) => {
     if (!isValid) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+    const tokenPayload = {
+      id: user._id,
+      email: user.email,
+      name: user.name
+    };
+    const token = generateToken(tokenPayload);
 
     res.status(200).json({
-      token: generateToken(user._id),
+      token: token,
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
-        // Add other user properties as needed
       },
-      name: user.name // Include the name separately in the response
+      name: user.name // Include the name separately in the response if needed
     });
   } catch (error) {
     // Handle any errors related to bcrypt.compare() here
