@@ -92,7 +92,7 @@ const signUp = async (req, res) => {
 const signIn = async (req, res) => {
   console.log("request is RECEIVED from signin funtcion ");
   const { email, password } = req.body;
- 
+
 
   // Check if email & password are present in the request body
   if (!email || !password) {
@@ -120,7 +120,16 @@ const signIn = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    res.status(200).json({ token: generateToken(user._id), user: user });
+    res.status(200).json({
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        // Add other user properties as needed
+      },
+      name: user.name // Include the name separately in the response
+    });
   } catch (error) {
     // Handle any errors related to bcrypt.compare() here
     console.error("Error comparing passwords:", error);
