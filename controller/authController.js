@@ -13,28 +13,32 @@ function generateToken(payload) {
 /* =========================== signUp =========================== */
 
 const signUp = async (req, res) => {
-  const { email } = req.body;
+  const { email, password, name } = req.body;
 
   const userId = req.param.id;
 
-  if (!email) {
-    return res.status(400).json({ message: "please provide your user email " });
+  if (!email || !password || !name) {
+    return res.status(400).json({ message: "Please provide your email, password, and name" });
   }
+
   const user = await usersModel.findOne({ email });
   try {
     if (user)
-      return res
-        .status(404)
-        .json({ message: " You have an accout please signIn " });
+      return res.status(404).json({ message: "You already have an account, please sign in" });
     if (userId) {
       req.body._id = userId;
     }
-    const newUser = await usersModel.create(req.body);
-    const token = generateToken(newUser._id);
+    const newUser = await usersModel.create({ email, password, name });
+    const tokenPayload = {
+      id: newUser._id,
+      email: newUser.email,
+      name: newUser.name
+    };
+    const token = generateToken(tokenPayload);
     res.cookie("authenticate", token);
     res.status(201).json({
       token: token,
-      message: " user is saved is saved ",
+      message: "User is saved",
       data: { user: newUser },
     });
   } catch (error) {
