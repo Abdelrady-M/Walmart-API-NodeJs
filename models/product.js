@@ -55,13 +55,13 @@ const productSchema = mongoose.Schema(
       required: true,
     },
     subcategory: {
-      type: String,
+      type: mongoose.SchemaTypes.ObjectId,
       ref: "subcategory",
       required: true,
     },
     brand: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "brand",
+      type: String,
+      minLength: [5, "short product brand"],
     },
     rating: {
       type: Number,
