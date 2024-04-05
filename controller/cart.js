@@ -30,7 +30,7 @@ var getAllCartProducts = async (req, res) => {
                 .findOne({ userId })
                 .populate(
                     "items._id",
-                    "title quantity price discountPercentage priceAfterDiscount description thumbnail "
+                    "title quantity price discountPercentage priceAfterDescount description thumbnail "
                 );
             res.status(200).json({ data });
         } catch (err) {

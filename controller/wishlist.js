@@ -1,6 +1,6 @@
 const wishlistModel = require("../models/wishlist");
 const productModel = require("../models/product");
-
+const jwt = require("jsonwebtoken");
 var userIdFromHeaders = (req) => {
     var userId;
     const { token } = req.headers;

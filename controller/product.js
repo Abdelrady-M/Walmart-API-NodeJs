@@ -138,6 +138,22 @@ var deletProduct = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+const searchProducts = async (req, res) => {
+  const { q } = req.query;
+  const searchQuery = q || '';
+  try {
+    const products = await productModel.find({
+      $or: [
+        { title: { $regex: searchQuery, $options: 'i' } },
+        { description: { $regex: searchQuery, $options: 'i' } },
+      ],
+    });
+    res.status(200).json({ results: products.length, data: products });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 module.exports = {
   getProducts,
@@ -145,4 +161,5 @@ module.exports = {
   getProductById,
   updateProduct,
   deletProduct,
+  searchProducts
 };

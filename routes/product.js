@@ -3,6 +3,7 @@ var router = express.Router();
 var productController = require(`../controller/product`);
 // const { protect } = require("../controller/authController");
 
+router.get('/search', productController.searchProducts);
 router.get(`/`, productController.getProducts);
 router.post(`/`, productController.saveProduct);
 router.get("/:id", productController.getProductById);
