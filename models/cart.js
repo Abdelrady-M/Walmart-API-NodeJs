@@ -7,33 +7,33 @@ const cartProductSchema = new mongoose.Schema({
         required: true,
     },
     priceWhenAdded: {
-        type:Number,
+        type: Number,
         required: true
     },
     quantity: {
-        type:Number,
+        type: Number,
         required: true,
-        default:1
+        default: 1
     },
-    available : {
+    available: {
         type: Boolean,
         default: true,
     }
-},{timestamps:true})
+}, { timestamps: true })
 
 const cartSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
-        unique:true,
-        required:true
+        unique: true,
+        required: true
     },
-    items:[ cartProductSchema ],
+    items: [cartProductSchema],
     guest: {
         type: Boolean,
         default: false
     }
-},{timestamps:true})
+}, { timestamps: true })
 
 var cartModel = mongoose.model("cart", cartSchema)
 

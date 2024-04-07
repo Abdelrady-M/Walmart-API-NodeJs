@@ -2,16 +2,18 @@ const mongoose = require("mongoose");
 const cartModel = require("../models/cart");
 const productModel = require("../models/product");
 const jwt = require("jsonwebtoken");
+const { jwtDecode } = require('jwt-decode');
 
 var userIdFromHeaders = (req) => {
     var res;
     const { token, token2 } = req.headers;
     if (token) {
         try {
-            userId = jwt.decode(token).id;
+            userId = jwtDecode(token).id;
             res = { userId };
+            console.log(userId);
         } catch (err) {
-            console.log(err);
+            console.error('JWT decoding error:', err);
         }
     } else if (token2) {
         let { userId, cartId } = JSON.parse(token2);
@@ -19,6 +21,27 @@ var userIdFromHeaders = (req) => {
     }
     return res;
 };
+// var userIdFromHeaders = (req) => {
+//     var res;
+//     const { token, token2 } = req.headers;
+//     if (token) {
+//         try {
+//             userId = jwtDecode(token).id;
+//             res = { userId };
+//             console.log(userId);
+//         } catch (err) {
+//             console.log(err);
+//         }
+//     } else if (token2) {
+//         let { userId, cartId } = JSON.parse(token2);
+//         res = { userId, cartId };
+//     }
+//     return res;
+// };
+
+
+
+
 
 var getAllCartProducts = async (req, res) => {
     var temp = userIdFromHeaders(req);
@@ -102,74 +125,156 @@ var addUserCart = async (req, res) => {
 };
 
 var addOneProductToCart = async (req, res) => {
-    var temp = userIdFromHeaders(req);
-    var userId = temp ? temp.userId : undefined;
-    // console.log(3);
-    var { quantity } = req.body;
-    var { productId } = req.params;
-    var data = { guest: false };
-    // case a guest added to cart===============>
-    // create a guest cart then add to it
-    if (!userId) {
-        try {
-            userId = mongoose.Types.ObjectId();
-            data = await cartModel.create({ userId, guest: true, items: [] });
-        } catch (err) {
-            if (err.message.includes("duplicate key")) {
-                let message = {
-                    cause: `Duplicate ${Object.keys(err.keyValue)[0]}`,
-                    message: "try it one more time",
-                };
-                res.status(403).json({ message });
-            } else {
-                res.status(400).json({ message: err });
-            }
-        }
-    }
-    // adding the product to the users cart
     try {
+        var temp = userIdFromHeaders(req);
+        var { userId, token } = temp || {};
+        var { quantity } = req.body;
+        var { productId } = req.params;
+
+        // Check if userId is present and retrieve or create cart accordingly
+        var cart = await cartModel.findOne({ userId });
+        if (!cart) {
+            // If cart doesn't exist, create a new one with the provided userId or generated ObjectId
+            cart = await cartModel.create({ userId, guest: !userId, items: [] });
+        }
+
+        // Adding the product to the cart
         var selectedProduct = await productModel.findOne({ _id: productId });
         var newItem = {
             _id: productId,
             priceWhenAdded: selectedProduct.price,
             quantity,
         };
-        var check = await cartModel.findOne({
-            userId,
-            "items._id": { $eq: productId },
-        });
-        if (check === null) {
-            var updateNotification = await cartModel.updateOne(
-                { userId },
-                { $addToSet: { items: newItem } }
-            );
-            if (updateNotification.modifiedCount != 0) {
-                // if the product has been added successfully just respond with the update notification
-                res.status(202).json({
-                    data: updateNotification,
-                    // userId,
-                    // guest: data.guest,
-                    data,
-                });
-            } else if (updateNotification.matchedCount === 0) {
-                res.status(404).json({
-                    message: "Could'n find user with this id",
-                });
-            }
+
+        // Check if the item already exists in the cart
+        var existingItemIndex = cart.items.findIndex(item => item._id.equals(productId));
+        if (existingItemIndex !== -1) {
+            cart.items[existingItemIndex].quantity += quantity; // Increment quantity if item already exists
         } else {
-            var updateNotification = await cartModel.updateOne(
-                { userId, "items._id": productId },
-                { $inc: { "items.$.quantity": 1 } }
-            );
-            res.status(203).json({
-                message: "We added another item of this Product to your cart",
-                userId,
-            });
+            cart.items.push(newItem); // Add new item to the cart
         }
+
+        // Save the updated cart
+        await cart.save();
+
+        // Respond with success message and updated cart data
+        res.status(200).json({ message: "Product added to cart successfully", cart });
     } catch (err) {
-        res.status(401).json({ message: err.message });
+        if (err.message.includes("duplicate key")) {
+            let message = {
+                cause: `Duplicate ${Object.keys(err.keyValue)[0]}`,
+                message: "Try it one more time",
+            };
+            res.status(403).json({ message });
+        } else {
+            res.status(400).json({ message: err.message });
+        }
     }
 };
+
+
+
+
+
+// var addOneProductToCart = async (req, res) => {
+//     var temp = userIdFromHeaders(req);
+//     var userId = temp ? temp.userId : undefined;
+//     // console.log(userId);
+//     // console.log(3);
+//     var { quantity } = req.body;
+//     var { productId } = req.params;
+//     var data = { guest: false };
+//     // case a guest added to cart===============>
+//     // create a guest cart then add to it
+//     if (userId) {
+//         data = await cartModel.create(
+//             { userId },
+//             { $setOnInsert: { userId, guest: false, items: [] } }, // SetOnInsert ensures cart creation only if userId doesn't exist
+//             { upsert: true, new: true }
+//         );
+//     } else {
+//         // If userId is not present, create a guest cart
+//         userId = mongoose.Types.ObjectId();
+//         data = await cartModel.create({ userId, guest: true, items: [] });
+//     }
+
+
+//     if (userId) {
+//         try {
+//             // userId = mongoose.Types.ObjectId();
+//             data = await cartModel.create({ userId, guest: false, items: [] });
+//         } catch (err) {
+//             if (err.message.includes("duplicate key")) {
+//                 let message = {
+//                     cause: `Duplicate ${Object.keys(err.keyValue)[0]}`,
+//                     message: "try it one more time",
+//                 };
+//                 res.status(403).json({ message });
+//             } else {
+//                 res.status(400).json({ message: err });
+//             }
+//         }
+//     }
+//     else if (!userId) {
+//         try {
+//             userId = mongoose.Types.ObjectId();
+//             data = await cartModel.create({ userId, guest: true, items: [] });
+//         } catch (err) {
+//             if (err.message.includes("duplicate key")) {
+//                 let message = {
+//                     cause: `Duplicate ${Object.keys(err.keyValue)[0]}`,
+//                     message: "try it one more time",
+//                 };
+//                 res.status(403).json({ message });
+//             } else {
+//                 res.status(400).json({ message: err });
+//             }
+//         }
+//     }
+//     // adding the product to the users cart
+//     try {
+//         var selectedProduct = await productModel.findOne({ _id: productId });
+//         var newItem = {
+//             _id: productId,
+//             priceWhenAdded: selectedProduct.price,
+//             quantity,
+//         };
+//         var check = await cartModel.findOne({
+//             userId,
+//             "items._id": { $eq: productId },
+//         });
+//         if (check === null) {
+//             var updateNotification = await cartModel.updateOne(
+//                 { userId },
+//                 { $addToSet: { items: newItem } }
+//             );
+//             if (updateNotification.modifiedCount != 0) {
+//                 // if the product has been added successfully just respond with the update notification
+//                 res.status(202).json({
+//                     data: updateNotification,
+//                     // userId,
+//                     // guest: data.guest,
+//                     data,
+//                 });
+//             } else if (updateNotification.matchedCount === 0) {
+//                 res.status(404).json({
+//                     message: "Could'n find user with this id",
+//                 });
+//             }
+//         } else {
+//             var updateNotification = await cartModel.updateOne(
+//                 { userId, "items._id": productId },
+//                 { $inc: { "items.$.quantity": 1 } }
+//             );
+//             res.status(203).json({
+//                 message: "We added another item of this Product to your cart",
+//                 userId,
+//             });
+//         }
+//     } catch (err) {
+//         res.status(401).json({ message: err.message });
+//     }
+// };
 
 var modifyOneProductFromCart = async (req, res) => {
     var temp = userIdFromHeaders(req);
