@@ -4,7 +4,9 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const cors = require("cors");
 const app = express();
+
 const authRouter = require("./routes/authRouter");
+const addressRouter = require("./routes/address");
 const productRouter = require("./routes/product");
 const ordersRouter = require("./routes/orders");
 const reviewsRouter = require("./routes/reviews");
@@ -49,7 +51,7 @@ app.use("/subcategories", subCategoryRoute);
 app.use("/emailRecovery", emailRecoveryRoute);
 app.use("/resetCode", resetCodeRoute);
 app.use("/resetPassword", resetPasswordRoute);
-
+app.use("/addresses", addressRouter);
 
 // handle not found not found middleware
 app.use("*", function (req, res, next) {
@@ -62,8 +64,7 @@ app.use("/", (req, res) => {
   });
 });
 
-
-//paypal 
+//paypal
 
 const generateAccessToken = async () => {
   try {
@@ -71,7 +72,7 @@ const generateAccessToken = async () => {
       throw new Error("MISSING_API_CREDENTIALS");
     }
     const auth = Buffer.from(
-      PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET,
+      PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET
     ).toString("base64");
     const response = await fetch(`${base}/v1/oauth2/token`, {
       method: "POST",
@@ -91,7 +92,7 @@ const createOrder = async (cart) => {
   // use the cart information passed from the front-end to calculate the purchase unit details
   console.log(
     "shopping cart information passed from the frontend createOrder() callback:",
-    cart,
+    cart
   );
 
   const accessToken = await generateAccessToken();
@@ -157,7 +158,6 @@ app.post("/api/orders/:orderID/capture", async (req, res) => {
     res.status(500).json({ error: "Failed to capture order." });
   }
 });
-
 
 app.use(errorHandler);
 
