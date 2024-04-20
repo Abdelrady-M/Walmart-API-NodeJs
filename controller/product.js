@@ -219,5 +219,6 @@ module.exports = {
   updateProduct,
   deletProduct,
   searchProducts,
-  productsCreatedPerMonth
+  productsCreatedPerMonth,
+  getProductsByCategory
 };

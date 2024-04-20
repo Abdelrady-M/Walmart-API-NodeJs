@@ -11,7 +11,7 @@ router.post(`/`, tokenValidate, productController.saveProduct);
 router.get("/:id", productController.getProductById);
 router.patch("/:id", tokenValidate, productController.updateProduct);
 router.delete("/:id", tokenValidate, productController.deletProduct);
-
+router.get('/category/:categoryName', productController.getProductsByCategory);
 // router.get('/search', productController.searchProducts);
 // router.get(`/`, productController.getProducts);
 // router.post(`/`, productController.saveProduct);
