@@ -114,6 +114,17 @@ var getProductById = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+/* ================================ get proudect by category ================================*/
+
+var getProductsByCategory = async (req, res) => {
+  var { categoryName } = req.params;
+  try {
+    var products = await productModel.find({ category: categoryName });
+    res.status(200).json({ data: products });
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 
 /* ================================ update product ================================  */
 
@@ -161,5 +172,6 @@ module.exports = {
   getProductById,
   updateProduct,
   deletProduct,
-  searchProducts
+  searchProducts,
+  getProductsByCategory
 };

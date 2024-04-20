@@ -5,8 +5,9 @@ var productController = require(`../controller/product`);
 
 router.get('/search', productController.searchProducts);
 router.get(`/`, productController.getProducts);
-router.post(`/`, productController.saveProduct);
 router.get("/:id", productController.getProductById);
+router.get('/category/:categoryName', productController.getProductsByCategory);
+router.post(`/`, productController.saveProduct);
 router.patch("/:id", productController.updateProduct);
 router.delete("/:id", productController.deletProduct);
 
