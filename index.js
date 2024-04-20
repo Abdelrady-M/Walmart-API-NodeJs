@@ -4,7 +4,9 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const cors = require("cors");
 const app = express();
+
 const authRouter = require("./routes/authRouter");
+const addressRouter = require("./routes/address");
 const productRouter = require("./routes/product");
 const ordersRouter = require("./routes/orders");
 const reviewsRouter = require("./routes/reviews");
@@ -49,6 +51,7 @@ app.use("/emailRecovery", emailRecoveryRoute);
 app.use("/resetCode", resetCodeRoute);
 app.use("/resetPassword", resetPasswordRoute);
 app.use("/stripe", stripe);
+app.use("/addresses", addressRouter);
 
 // handle not found not found middleware
 app.use("*", function (req, res, next) {
@@ -60,7 +63,6 @@ app.use("/", (req, res) => {
     message: "Welcome to the Node.js REST API using ExpressJS and MongoDB",
   });
 });
-
 
 //paypal 
 
