@@ -40,8 +40,8 @@ const subcategorySchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      minLength: [2, "too short category name"],
-      maxLength: [32, "too long category name"],
+      minLength: [2, "too short subcategory name"],
+      maxLength: [32, "too long subcategory name"],
     },
     image: {
       type: String,
@@ -51,7 +51,6 @@ const subcategorySchema = mongoose.Schema(
       ref: "category",
       required: true,
     },
-
   },
   { timestamps: true }
 );

@@ -20,6 +20,6 @@ router.patch("/", modifyOneProductFromCart);
 // user and guest user
 router.patch("/:productId", removeOneProductFromCart);
 // user only
-router.delete("/", deleteUserCart);
+router.delete("/:id", deleteUserCart);
 
 module.exports = router;

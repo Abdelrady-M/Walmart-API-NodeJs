@@ -18,11 +18,12 @@
 // var categoryModel = mongoose.model("category", categorySchema);
 // module.exports = categoryModel;
 
+
 const mongoose = require("mongoose");
 const categorySchema = mongoose.Schema(
   {
     _id: {
-      type: String, // Set the _id field as a String
+      type: String, 
     },
     name: {
       type: String,
@@ -41,12 +42,6 @@ const categorySchema = mongoose.Schema(
     image: {
       type: String,
     },
-    subcategories: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "subcategory", // Reference to the Subcategory model
-      },
-    ],
   },
   { timestamps: true }
 );

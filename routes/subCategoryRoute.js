@@ -9,16 +9,16 @@ const {
   subcategoryProducts,
   deleteSubCategory,
 } = require("../controller/subCategory");
-
+const { tokenValidate } = require("../middlewares/isTokenValid");
 // merge params allow us to access paramters on other routers
 // we need to access categoryId from category router
 const router = express.Router({ mergeParams: true });
 
-router.post("/", createSubCategory);
+router.post("/", tokenValidate, createSubCategory);
 router.get("/", getSubCategories);
-router.get("/product/:id", subcategoryProducts);
+router.get("/products/:id", subcategoryProducts);
 router.get("/:id", getSubCategoryById);
-router.patch("/:id", updateSubCategory);
-router.delete("/:id", deleteSubCategory);
+router.patch("/:id", tokenValidate, updateSubCategory);
+router.delete("/:id", tokenValidate, deleteSubCategory);
 
 module.exports = router;

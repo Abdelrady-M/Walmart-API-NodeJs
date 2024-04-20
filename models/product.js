@@ -55,13 +55,13 @@ const productSchema = mongoose.Schema(
       required: true,
     },
     subcategory: {
-      type: mongoose.SchemaTypes.ObjectId,
+      type: String,
       ref: "subcategory",
       required: true,
     },
     brand: {
-      type: String,
-      minLength: [5, "short product brand"],
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "brand",
     },
     rating: {
       type: Number,
@@ -84,6 +84,14 @@ const productSchema = mongoose.Schema(
         color: [String],
       },
     ],
+    boughtUnits: {
+      type: Number,
+      default: 0,
+    },
+    totalSellingPrice: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

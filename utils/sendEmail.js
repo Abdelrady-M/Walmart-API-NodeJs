@@ -9,7 +9,7 @@ const sendEmail = async (recipientEmail, resetCode) => {
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       auth: {
-        user: "abdelrady.mohamed95@hotmail.com",
+        user: "mostafa.i.elsayed95@gmail.com",
         pass: "tektctetqeipznho",
       },
     });

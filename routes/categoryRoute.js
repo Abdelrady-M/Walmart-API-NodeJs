@@ -1,5 +1,4 @@
 const express = require("express");
-const { restrict, protect } = require("../controller/authController");
 const {
   createCategory,
   getCategories,
@@ -8,6 +7,7 @@ const {
   deleteCategory,
 } = require("../controller/category");
 const subCategoryRoute = require("./subCategoryRoute");
+const { tokenValidate } = require("../middlewares/isTokenValid");
 const app = express();
 var router = express.Router();
 
@@ -19,7 +19,7 @@ router.post("/", createCategory);
 router.get("/", getCategories);
 router.get("/:id", getCategoryById);
 router.patch("/:id", updateCategory);
-router.delete("/:id", protect, deleteCategory);
+router.delete("/:id", tokenValidate, deleteCategory);
 
 module.exports = router;
 

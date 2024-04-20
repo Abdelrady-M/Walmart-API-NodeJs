@@ -154,6 +154,52 @@ const searchProducts = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+var productsCreatedPerMonth = async (req, res) => {
+  // Get the current date
+  const currentDate = new Date();
+
+  // Calculate the date 12 months ago
+  const twelveMonthsAgo = new Date();
+  twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11); // Subtracting 11 because the current month is included
+  try {
+    productCount = await productModel.count({});
+    await productModel
+      .aggregate([
+        {
+          $match: {
+            createdAt: { $gte: twelveMonthsAgo, $lte: currentDate },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            year: "$_id.year",
+            month: "$_id.month",
+            count: 1,
+          },
+        },
+      ])
+      .exec((err, result) => {
+        if (err) {
+          console.error(err);
+          // Handle the error
+        } else {
+          res.status(201).json({ result, productCount });
+        }
+      });
+  } catch (error) {
+    res.status(500).json({ message: "Unexpected Error" });
+  }
+};
 
 module.exports = {
   getProducts,
@@ -161,5 +207,6 @@ module.exports = {
   getProductById,
   updateProduct,
   deletProduct,
-  searchProducts
+  searchProducts,
+  productsCreatedPerMonth
 };

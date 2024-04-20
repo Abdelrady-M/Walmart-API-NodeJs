@@ -15,41 +15,64 @@ const createUser = async (req, res) => {
 };
 // Get users
 const getAllUsers = async (req, res) => {
+  let limit = parseInt(req.params.limit);
+  let skip = parseInt(req.params.skip);
+
   try {
-    let limit = parseInt(req.params.limit);
-    let skip = parseInt(req.params.skip);
-
-    console.log('Received params - limit:', limit, 'skip:', skip); // Log the received parameters
-
-    let users = await usersModel.find().limit(limit).skip(skip);
-    res.status(200).json({ message: "Users fetched successfully", users });
+    let users = await usersModel.find({role: "user"}).limit(limit).skip(skip);
+    res.status(200).json(users);
   } catch (err) {
-    console.error("Error fetching users:", err);
-    res.status(500).json({ message: "Something went wrong" });
-  }
+    res.status(500).json({ message: "something Went rong " });
+  } 
 };
 // Get user  =>   id
+// const getOneUser = async (req, res) => {
+//   let id = req.params.id;
+//   try {
+//     let user = await usersModel.findOne({ _id: id }, "name email");
+//     const response = res.status(200).json(user);
+//   } catch (err) {
+//     res.status(404).json({ message: "Cant find this ID " });
+//   }
+// };
 const getOneUser = async (req, res) => {
   let id = req.params.id;
   try {
-    let user = await usersModel.findOne({ _id: id }, "name email");
+    let user = await usersModel.findOne({ _id: id });
     const response = res.status(200).json(user);
   } catch (err) {
     res.status(404).json({ message: "Cant find this ID " });
   }
 };
-
 // update user => id
-const updateOneUser = async (req, res) => {
+const updateOneUser = async (req, res,auth) => {
   let { id } = req.params;
-  let { username } = req.body;
+  // let { username } = req.body;
+  var updates = req.body;
+  console.log(updates);
   try {
-    let user = await usersModel.updateOne({ _id: id }, { username: username });
-    res.status(200).json({ message: "the user is updated ", data: user });
+    let todos = await usersModel.updateOne({ _id: id }, updates);
+    const response = res.status(200).json({ message: "the user is updated ", data: todos });
   } catch (err) {
-    res.status(500).json({ message: " Error in update the document" });
+    const response =  res.status(500).json({ message: ` Error in update the document : ${err}` });
   }
 };
+
+const updateOneUserAddress = async (req,res,auth)=>{
+  let { id } = req.params;
+  var updates = req.body;
+  console.log(`id : ${id}`);
+
+  console.log(`updates : ${[...updates]}`);
+  try {
+    let result = await usersModel.updateOne({ _id: id }, {addressBook : updates});
+    res.status(200).json({ message: "the user is updated ", result});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: ` Error in update the document : ${err}` });
+  }
+}
+
 // Delete user => id
 const deleteOneUser = async (req, res) => {
   let { id } = req.params;
@@ -66,5 +89,6 @@ module.exports = {
   getAllUsers,
   getOneUser,
   updateOneUser,
+  updateOneUserAddress,
   deleteOneUser,
 };
