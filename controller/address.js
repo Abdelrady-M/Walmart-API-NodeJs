@@ -4,7 +4,7 @@ const AddressModel = require("../models/address");
 const createNewAddress = async (req, res) => {
   try {
     const address = new AddressModel(req.body);
-    await AddressModel.save();
+    await address.save();
     res.status(201).send(address);
   } catch (error) {
     res.status(400).send(error);
