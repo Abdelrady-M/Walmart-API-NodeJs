@@ -25,6 +25,7 @@ const resetCodeRoute = require("./routes/resetCode");
 const resetPasswordRoute = require("./routes/resetPassword");
 const userRouter = require("./routes/usersRouter");
 const stripe = require("./routes/stripe")
+const userAddress = require("./routes/users")
 // Connect to DB
 connectDB();
 
@@ -39,7 +40,7 @@ deleteOldCarts();
 
 // Routes
 
-app.use("/users", authRouter, userRouter);
+app.use("/users", authRouter, userRouter, userAddress);
 app.use("/product", productRouter);
 app.use("/orders", ordersRouter);
 app.use("/reviews", reviewsRouter);
@@ -51,7 +52,6 @@ app.use("/emailRecovery", emailRecoveryRoute);
 app.use("/resetCode", resetCodeRoute);
 app.use("/resetPassword", resetPasswordRoute);
 app.use("/stripe", stripe);
-app.use("/addresses", addressRouter);
 
 // handle not found not found middleware
 app.use("*", function (req, res, next) {
